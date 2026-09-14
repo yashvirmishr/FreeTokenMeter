@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use log::{info, warn, error};
 
 use crate::database::UsageRecord;
-use crate::pricing::estimate_model_cost;
+use crate::pricing::calculate_usage_value;
 
 /// Raw session row as stored in OpenCode's SQLite database.
 #[derive(Debug, Clone)]
@@ -148,12 +148,11 @@ impl OpenCodeProvider {
     }
 
     /// Convert a raw OpenCode session into our normalized UsageRecord.
-    /// This is a pure transformation — no side effects, no DB access.
+    /// Uses the new pricing engine to calculate actual cost, reference value, and free value.
     pub fn normalize_session(session: &OpenCodeSession) -> UsageRecord {
         let (model_name, _provider_id, _variant) = Self::parse_model(&session.model_json);
 
         // OpenCode's total = input + output + reasoning + cache_read + cache_write
-        // We store the individual breakdown and let the caller decide what "total" means.
         let total_tokens = session.tokens_input
             + session.tokens_output
             + session.tokens_reasoning
@@ -165,18 +164,14 @@ impl OpenCodeProvider {
             .map(|dt| dt.to_rfc3339())
             .unwrap_or_default();
 
-        // Use OpenCode's authoritative cost when available.
-        // Only fall back to our pricing estimate when cost = $0.
-        let estimated_cost = if session.cost > 0.0 {
-            session.cost
-        } else {
-            estimate_model_cost(
-                &model_name,
-                session.tokens_input,
-                session.tokens_output,
-                session.tokens_cache_read,
-            )
-        };
+        // Calculate all pricing dimensions using the new engine
+        let usage_value = calculate_usage_value(
+            &model_name,
+            session.cost,
+            session.tokens_input,
+            session.tokens_output,
+            session.tokens_cache_read,
+        );
 
         UsageRecord {
             id: format!("oc_{}", session.id),
@@ -188,8 +183,12 @@ impl OpenCodeProvider {
             reasoning_tokens: session.tokens_reasoning,
             cached_tokens: session.tokens_cache_read,
             total_tokens,
-            estimated_cost,
+            estimated_cost: usage_value.actual_cost,
+            reference_value: usage_value.reference_value,
+            free_value: usage_value.free_value,
+            pricing_status: usage_value.pricing_status.as_str().to_string(),
             session_id: Some(session.id.clone()),
+            pricing_version: Some(usage_value.pricing_version.to_string()),
         }
     }
 }

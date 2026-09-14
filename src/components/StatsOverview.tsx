@@ -13,9 +13,6 @@ export function StatsOverview({ summary }: StatsOverviewProps) {
     reasoning_tokens: 0,
     cached_tokens: 0,
     request_count: 0,
-    estimated_api_value: 0,
-    actual_cost: 0,
-    free_value: 0,
   };
 
   return (

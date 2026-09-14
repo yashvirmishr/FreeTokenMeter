@@ -9,7 +9,11 @@ export interface UsageRecord {
   cached_tokens: number;
   total_tokens: number;
   estimated_cost: number;
+  reference_value?: number;
+  free_value?: number;
+  pricing_status: string;
   session_id?: string;
+  pricing_version?: string;
 }
 
 export interface ProviderStatus {
@@ -28,8 +32,8 @@ export interface UsageSummary {
   reasoning_tokens: number;
   cached_tokens: number;
   request_count: number;
-  estimated_api_value: number;
   actual_cost: number;
+  reference_value: number;
   free_value: number;
 }
 
@@ -37,14 +41,17 @@ export interface ProviderUsage {
   provider: string;
   tokens: number;
   percentage: number;
-  estimated_value: number;
+  actual_cost: number;
+  reference_value: number;
 }
 
 export interface ModelUsage {
   model: string;
   tokens: number;
   percentage: number;
-  estimated_value: number;
+  actual_cost: number;
+  reference_value?: number;
+  pricing_status: string;
 }
 
 export interface ActivityEntry {
