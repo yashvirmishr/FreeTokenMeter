@@ -4,6 +4,8 @@ import type { TimeRange } from '../types';
 interface TimeRangeTabsProps {
   active: TimeRange;
   onChange: (range: TimeRange) => void;
+  /** Panels own the number keys while they are open. */
+  disabled?: boolean;
 }
 
 const ranges: { key: TimeRange; label: string; keyHint: string }[] = [
@@ -13,10 +15,12 @@ const ranges: { key: TimeRange; label: string; keyHint: string }[] = [
   { key: 'all', label: 'ALL TIME', keyHint: '4' },
 ];
 
-export function TimeRangeTabs({ active, onChange }: TimeRangeTabsProps) {
+export function TimeRangeTabs({ active, onChange, disabled = false }: TimeRangeTabsProps) {
   useEffect(() => {
+    if (disabled) return;
     const handler = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
       switch (e.key) {
         case '1': onChange('today'); break;
         case '2': onChange('week'); break;
@@ -26,7 +30,7 @@ export function TimeRangeTabs({ active, onChange }: TimeRangeTabsProps) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onChange]);
+  }, [onChange, disabled]);
 
   return (
     <div className="flex gap-2 justify-center py-1">
@@ -34,7 +38,7 @@ export function TimeRangeTabs({ active, onChange }: TimeRangeTabsProps) {
         <button
           key={r.key}
           onClick={() => onChange(r.key)}
-          className={`tab-button ${active === r.key ? 'active' : ''}`}
+          className={`tab ${active === r.key ? 'active' : ''}`}
         >
           [{r.keyHint}] {r.label}
         </button>

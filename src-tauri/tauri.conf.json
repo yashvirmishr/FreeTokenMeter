@@ -12,19 +12,25 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "FreeTokenMeter",
         "width": 720,
         "height": 640,
+        "minWidth": 360,
+        "minHeight": 300,
         "resizable": true,
         "decorations": true,
         "transparent": false,
-        "alwaysOnTop": false
+        "alwaysOnTop": false,
+        "visible": false
       }
     ],
     "trayIcon": {
       "id": "main-tray",
       "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
+      "iconAsTemplate": true,
+      "showMenuOnLeftClick": false,
+      "tooltip": "FreeTokenMeter — token usage monitor"
     },
     "security": {
       "csp": null

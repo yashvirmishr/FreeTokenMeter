@@ -153,6 +153,23 @@
     color: var(--color-cyan);
   }
 
+  .pricing-section {
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .pricing-rule {
+    border-top: 1px solid var(--color-border-light);
+    margin: 0.15rem 0 0.35rem 0;
+  }
+
+  .card {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-light);
+  }
+
   .tab {
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
