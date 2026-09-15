@@ -9,11 +9,11 @@ export interface UsageRecord {
   cached_tokens: number;
   total_tokens: number;
   estimated_cost: number;
-  reference_value?: number;
-  free_value?: number;
+  reference_value: number | null;
+  free_value: number | null;
   pricing_status: string;
-  session_id?: string;
-  pricing_version?: string;
+  session_id: string | null;
+  pricing_version: string | null;
 }
 
 export interface ProviderStatus {
@@ -21,8 +21,8 @@ export interface ProviderStatus {
   name: string;
   connected: boolean;
   status: string;
-  detail?: string;
-  last_sync?: string;
+  detail: string | null;
+  last_sync: string | null;
 }
 
 export interface UsageSummary {
@@ -50,7 +50,7 @@ export interface ModelUsage {
   tokens: number;
   percentage: number;
   actual_cost: number;
-  reference_value?: number;
+  reference_value: number | null;
   pricing_status: string;
 }
 
@@ -69,6 +69,8 @@ export interface DashboardData {
   providers: ProviderStatus[];
 }
 
+// ── Formatting helpers ──
+
 export type TimeRange = 'today' | 'week' | 'month' | 'all';
 
 export function getDaysForRange(range: TimeRange): number | null {
@@ -80,25 +82,28 @@ export function getDaysForRange(range: TimeRange): number | null {
   }
 }
 
-export function formatTokens(tokens: number): string {
-  if (tokens >= 1_000_000) {
-    return `${(tokens / 1_000_000).toFixed(1)}M`;
-  }
-  if (tokens >= 1_000) {
-    return `${(tokens / 1_000).toFixed(1)}K`;
-  }
-  return tokens.toLocaleString();
+export function formatTokens(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return n.toString();
 }
 
-export function formatCurrency(amount: number): string {
-  return `$${amount.toFixed(2)}`;
+export function formatCurrency(n: number): string {
+  if (n === 0) return '$0.00';
+  if (n < 0.01) return `$${n.toFixed(4)}`;
+  return `$${n.toFixed(2)}`;
 }
 
 export function formatTimestamp(ts: string): string {
-  try {
-    const date = new Date(ts);
-    return date.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  } catch {
-    return '--:--:--';
-  }
+  const date = new Date(ts);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+
+  if (diffMins < 1) return 'now';
+  if (diffMins < 60) return `${diffMins}m`;
+  const diffHrs = Math.floor(diffMins / 60);
+  if (diffHrs < 24) return `${diffHrs}h`;
+  const diffDays = Math.floor(diffHrs / 24);
+  return `${diffDays}d`;
 }

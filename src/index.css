@@ -12,6 +12,7 @@
   --color-error: #FF5C5C;
   --color-border: #1E2E24;
   --color-border-light: #2A3D32;
+  --color-cyan: #00E5FF;
 
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
 }
@@ -130,27 +131,6 @@
     text-align: right;
   }
 
-  .tab-button {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
-    background: transparent;
-    border: 1px solid transparent;
-    color: var(--color-muted);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .tab-button:hover {
-    color: var(--color-text);
-    border-color: var(--color-border);
-  }
-
-  .tab-button.active {
-    color: var(--color-green);
-    border-color: var(--color-green);
-  }
-
   .pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
@@ -167,5 +147,30 @@
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  .text-cyan {
+    color: var(--color-cyan);
+  }
+
+  .tab {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tab:hover {
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  .tab.active {
+    color: var(--color-green);
+    border-color: var(--color-green);
   }
 }

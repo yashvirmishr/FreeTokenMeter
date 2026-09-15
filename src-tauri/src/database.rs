@@ -230,17 +230,29 @@ impl Database {
         Ok(())
     }
 
-    pub fn get_usage_summary(&self, days: Option<i64>) -> Result<UsageSummary, rusqlite::Error> {
-        let (where_clause, query_params): (String, Vec<Box<dyn rusqlite::types::ToSql>>) = match days {
-            Some(d) => {
-                let cutoff = Utc::now().timestamp_millis() - (d * 24 * 60 * 60 * 1000);
-                ("WHERE time_created >= ?1".to_string(), vec![Box::new(cutoff)])
-            }
-            None => ("WHERE 1=1".to_string(), vec![]),
+    pub fn get_usage_summary(&self, days: Option<i64>, provider: Option<&str>) -> Result<UsageSummary, rusqlite::Error> {
+        let mut conditions = Vec::new();
+        let mut query_params: Vec<Box<dyn rusqlite::types::ToSql>> = Vec::new();
+
+        if let Some(d) = days {
+            let cutoff = Utc::now().timestamp_millis() - (d * 24 * 60 * 60 * 1000);
+            conditions.push(format!("time_created >= ?{}", query_params.len() + 1));
+            query_params.push(Box::new(cutoff));
+        }
+
+        if let Some(p) = provider {
+            conditions.push(format!("provider = ?{}", query_params.len() + 1));
+            query_params.push(Box::new(p.to_string()));
+        }
+
+        let where_clause = if conditions.is_empty() {
+            "WHERE 1=1".to_string()
+        } else {
+            format!("WHERE {}", conditions.join(" AND "))
         };
 
         let query = format!(
-            "SELECT 
+            "SELECT
                 COALESCE(SUM(total_tokens), 0),
                 COALESCE(SUM(input_tokens), 0),
                 COALESCE(SUM(output_tokens), 0),
@@ -346,13 +358,25 @@ impl Database {
         }).collect())
     }
 
-    pub fn get_model_usage(&self, days: Option<i64>) -> Result<Vec<ModelUsage>, rusqlite::Error> {
-        let (where_clause, query_params): (String, Vec<Box<dyn rusqlite::types::ToSql>>) = match days {
-            Some(d) => {
-                let cutoff = Utc::now().timestamp_millis() - (d * 24 * 60 * 60 * 1000);
-                ("WHERE time_created >= ?1".to_string(), vec![Box::new(cutoff)])
-            }
-            None => ("WHERE 1=1".to_string(), vec![]),
+    pub fn get_model_usage(&self, days: Option<i64>, provider: Option<&str>) -> Result<Vec<ModelUsage>, rusqlite::Error> {
+        let mut conditions = Vec::new();
+        let mut query_params: Vec<Box<dyn rusqlite::types::ToSql>> = Vec::new();
+
+        if let Some(d) = days {
+            let cutoff = Utc::now().timestamp_millis() - (d * 24 * 60 * 60 * 1000);
+            conditions.push(format!("time_created >= ?{}", query_params.len() + 1));
+            query_params.push(Box::new(cutoff));
+        }
+
+        if let Some(p) = provider {
+            conditions.push(format!("provider = ?{}", query_params.len() + 1));
+            query_params.push(Box::new(p.to_string()));
+        }
+
+        let where_clause = if conditions.is_empty() {
+            "WHERE 1=1".to_string()
+        } else {
+            format!("WHERE {}", conditions.join(" AND "))
         };
 
         // Use the most common pricing_status per model for display
@@ -380,7 +404,7 @@ impl Database {
 
         let raw: Vec<(String, i64, f64, f64, String)> = rows.filter_map(|r| r.ok()).collect();
         let total_tokens: i64 = raw.iter().map(|(_, t, _, _, _)| *t).sum();
-        
+
         Ok(raw.into_iter().map(|(model, tokens, cost, ref_val, status)| {
             let percentage = if total_tokens > 0 {
                 (tokens as f64 / total_tokens as f64) * 100.0
@@ -400,13 +424,26 @@ impl Database {
         }).collect())
     }
 
-    pub fn get_activity(&self, limit: usize) -> Result<Vec<ActivityEntry>, rusqlite::Error> {
-        let mut stmt = self.conn.prepare(
-            "SELECT timestamp, provider, model, total_tokens 
-             FROM usage_records ORDER BY time_created DESC LIMIT ?1"
-        )?;
-        
-        let rows = stmt.query_map(params![limit as i64], |row| {
+    pub fn get_activity(&self, limit: usize, provider: Option<&str>) -> Result<Vec<ActivityEntry>, rusqlite::Error> {
+        let (where_clause, query_params): (String, Vec<Box<dyn rusqlite::types::ToSql>>) = match provider {
+            Some(p) => ("WHERE provider = ?1".to_string(), vec![Box::new(p.to_string())]),
+            None => ("WHERE 1=1".to_string(), vec![]),
+        };
+
+        let query = format!(
+            "SELECT timestamp, provider, model, total_tokens
+             FROM usage_records {} ORDER BY time_created DESC LIMIT ?{}",
+            where_clause,
+            query_params.len() + 1
+        );
+
+        let mut stmt = self.conn.prepare(&query)?;
+        let param_refs: Vec<&dyn rusqlite::types::ToSql> = query_params.iter().map(|p| p.as_ref()).collect();
+        let mut all_params: Vec<&dyn rusqlite::types::ToSql> = param_refs;
+        let limit_i64 = limit as i64;
+        all_params.push(&limit_i64);
+
+        let rows = stmt.query_map(all_params.as_slice(), |row| {
             Ok(ActivityEntry {
                 timestamp: row.get(0)?,
                 provider: row.get(1)?,

@@ -16,7 +16,9 @@ export function ActivityFeed({ entries }: ActivityFeedProps) {
           entries.slice(0, 10).map((entry, i) => (
             <div key={i} className="activity-row fade-in">
               <span className="time">{formatTimestamp(entry.timestamp)}</span>
-              <span className="provider">{entry.provider}</span>
+              <span className={`provider ${entry.provider === 'freebuff' ? 'text-cyan' : 'text-green'}`}>
+                [{entry.provider}]
+              </span>
               <span className="model">{entry.model}</span>
               <span className="tokens">+{formatTokens(entry.tokens)}</span>
             </div>

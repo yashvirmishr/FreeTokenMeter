@@ -179,6 +179,210 @@ fn lookup_profile(model: &str) -> Option<ModelPricingProfile> {
         }),
 
         // ──────────────────────────────────────────────────────────────
+        // Freebuff models — all free, some with reference equivalents
+        // ──────────────────────────────────────────────────────────────
+
+        // Freebuff MiMo 2.5 — same underlying model as OpenCode's mimo-v2.5-free
+        "mimo/mimo-v2.5" => Some(ModelPricingProfile {
+            display_name: "MiMo 2.5",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: Some(PricingRates {
+                input_per_million: 0.14,
+                output_per_million: 0.28,
+                cached_per_million: 0.0028,
+            }),
+            reference_model: Some("mimo-v2.5"),
+            reference_source: "OpenRouter / Xiaomi MiMo-V2.5 paid API pricing",
+            reference_verified: "2025-07",
+        }),
+
+        // Freebuff GLM 5.3 Flash — no known paid equivalent
+        "z-ai/glm-5.3-flash" => Some(ModelPricingProfile {
+            display_name: "GLM 5.3 Flash",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff DeepSeek V4 Flash — no known paid equivalent
+        "deepseek/deepseek-v4-flash" => Some(ModelPricingProfile {
+            display_name: "DeepSeek V4 Flash",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff GPT-5.6 Luna — no known paid equivalent
+        "openai/gpt-5.6-luna" => Some(ModelPricingProfile {
+            display_name: "GPT-5.6 Luna",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff Solar Pro 4 — no known paid equivalent
+        "upstage/solar-pro4" => Some(ModelPricingProfile {
+            display_name: "Solar Pro 4",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff GLM 5.2 — no known paid equivalent
+        "z-ai/glm-5.2" => Some(ModelPricingProfile {
+            display_name: "GLM 5.2",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff MiniMax M3 — no known paid equivalent
+        "minimax/minimax-m3" => Some(ModelPricingProfile {
+            display_name: "MiniMax M3",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff Muse Spark 1.2 — no known paid equivalent
+        "meta/muse-spark-1.2-contributor" => Some(ModelPricingProfile {
+            display_name: "Muse Spark 1.2",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff Muse Spark 1.3 — no known paid equivalent
+        "meta/muse-spark-1.3-contributor" => Some(ModelPricingProfile {
+            display_name: "Muse Spark 1.3",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff Ox Alpha — no known paid equivalent
+        "stealth/ox-alpha" => Some(ModelPricingProfile {
+            display_name: "Ox Alpha",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff Kimi K3 Eco — no known paid equivalent
+        "crof/kimi-k3-eco" => Some(ModelPricingProfile {
+            display_name: "Kimi K3 Eco",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff GPT-5.6 Luna ES — no known paid equivalent
+        "openai/gpt-5.6-luna-es" => Some(ModelPricingProfile {
+            display_name: "GPT-5.6 Luna ES",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff Fable 5 — no known paid equivalent
+        "fable/fable-5" => Some(ModelPricingProfile {
+            display_name: "Fable 5",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // Freebuff Gemini 3.8 Flash — no known paid equivalent
+        "google/gemini-3.8-flash" => Some(ModelPricingProfile {
+            display_name: "Gemini 3.8 Flash",
+            actual: PricingRates {
+                input_per_million: 0.0,
+                output_per_million: 0.0,
+                cached_per_million: 0.0,
+            },
+            reference: None,
+            reference_model: None,
+            reference_source: "no configured reference",
+            reference_verified: "n/a",
+        }),
+
+        // ──────────────────────────────────────────────────────────────
         // Paid models — actual and reference are the same
         // ──────────────────────────────────────────────────────────────
 

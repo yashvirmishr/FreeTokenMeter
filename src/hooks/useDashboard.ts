@@ -3,9 +3,12 @@ import { invoke } from '@tauri-apps/api/core';
 import type { DashboardData, TimeRange } from '../types';
 import { getDaysForRange } from '../types';
 
+export type ProviderFilter = 'all' | 'opencode' | 'freebuff';
+
 export function useDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('today');
+  const [providerFilter, setProviderFilter] = useState<ProviderFilter>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
@@ -13,7 +16,8 @@ export function useDashboard() {
   const fetchDashboard = useCallback(async () => {
     try {
       const days = getDaysForRange(timeRange);
-      const result = await invoke<DashboardData>('get_dashboard', { days });
+      const provider = providerFilter === 'all' ? null : providerFilter;
+      const result = await invoke<DashboardData>('get_dashboard', { days, provider });
       setData(result);
       setError(null);
     } catch (err) {
@@ -21,12 +25,12 @@ export function useDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [timeRange]);
+  }, [timeRange, providerFilter]);
 
   const sync = useCallback(async () => {
     setSyncing(true);
     try {
-      await invoke<string>('sync_opencode');
+      await invoke<string>('sync_all');
       await fetchDashboard();
     } catch (err) {
       setError(String(err));
@@ -51,6 +55,8 @@ export function useDashboard() {
     data,
     timeRange,
     setTimeRange,
+    providerFilter,
+    setProviderFilter,
     loading,
     error,
     syncing,
